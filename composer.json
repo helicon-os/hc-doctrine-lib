@@ -22,6 +22,6 @@
         "doctrine/orm": "Requires Doctrine (doctrine/dbal)"
     },
     "autoload": {
-        "psr-4": { "helicon\\doctrine\\lib": ""}
+        "psr-4": { "helicon\\doctrine\\lib\\": ""}
     }
 }
