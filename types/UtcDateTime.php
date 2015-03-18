@@ -26,6 +26,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+namespace helicon\doctrine\lib\types;
+
 /**
  * UTC-Timestamp Field
  * 

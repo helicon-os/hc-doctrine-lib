@@ -1,0 +1,27 @@
+{
+    "name": "helicon-os/hc-doctrine-lib",
+    "type": "library",
+    "description": "Additional classes for Doctrine",
+    "keywords": ["orm", "database"],
+    "license": "BSD-2-Clause",
+    "authors": [
+        {"name": "Andreas Prucha, Helicon Software Development", "email": "prucha@helicon.co.at"}
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "ext-pdo": "*",
+        "doctrine/collections": "~1.1",
+        "doctrine/dbal": "~2.4",
+        "symfony/console": "~2.0"
+    },
+    "require-dev": {
+        "symfony/yaml": "~2.1",
+        "satooshi/php-coveralls": "dev-master"
+    },
+    "suggest": {
+        "doctrine/orm": "Requires Doctrine (doctrine/dbal)"
+    },
+    "autoload": {
+        "psr-4": { "helicon\\doctrine\\lib": ""}
+    }
+}
