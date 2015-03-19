@@ -33,36 +33,22 @@ namespace helicon\doctrine\lib\types;
  * 
  * Stores and reads timestamps as UTC
  */
-class UtcDateTimeType extends \Doctrine\DBAL\Types\DateTimeType
+class UtcDateTimeType extends \Doctrine\DBAL\Types\DateTimeTzType
 {
-    static private $utc = null;
+    static private $utcTz = null;
 
     public function convertToDatabaseValue($value, Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        if ($value === null || $value === '') {
-            return null;
-        }
-        
-        $utcDateTime = clone ($value);
-        $utcDateTime->setTimezone((self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone('UTC')));
-        
-        return $utcDateTime->format('Y-m-d H:i:s').'.'.round($utcDateTime->format('u')/100);
       
+      $value = new \DateTime ($value, (self::$utcTz) ? self::$utcTz : (self::$utcTz = new \DateTimeZone('UTC')));
+      
+      return parent::convertToDatabaseValue($value, $platform);
     }
 
     public function convertToPHPValue($value, Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
+      $value = new \DateTime ($value, (self::$utcTz) ? self::$utcTz : (self::$utcTz = new \DateTimeZone('UTC')));
       
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        $val = new \DateTime ($value,
-            (self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone('UTC'))
-        );
-        if (!$val) {
-            throw ConversionException::conversionFailed($value, $this->getName());
-        }
-        return $val;
+      return parent::convertToPHPValue($value, $platform); 
     }
 }
