@@ -33,11 +33,11 @@ namespace helicon\doctrine\lib\types;
  * 
  * Stores and reads timestamps as UTC
  */
-class UtcDateTimeType extends \Doctrine\DBAL\Types\DateTimeType
+class UtcDateTimeTzType extends \Doctrine\DBAL\Types\DateTimeTzType
 {
     static private $utcTz = null;
     
-    const TYPE_NAME = 'utcdatetime';
+    const TYPE_NAME = 'utcdatetimetz';
     
     public function getName()
     {
@@ -63,4 +63,6 @@ class UtcDateTimeType extends \Doctrine\DBAL\Types\DateTimeType
     {
         return true;
     }    
+    
+    
 }
