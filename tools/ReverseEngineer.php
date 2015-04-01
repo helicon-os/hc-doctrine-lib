@@ -43,6 +43,16 @@ class ReverseEngineer extends AbstractTool
     public $entityManager = null;
     
     /**
+     * @var string
+     */
+    public $namespace = null;
+    
+    /**
+     * @var Doctrine\Common\Persistence\Mapping\Driver\MappingDriver Associated mapping driver for reading
+     */
+    public $mappingDriver = null;
+    
+    /**
      * Keep case of names if possible
      * 
      * @var boolean 
@@ -122,15 +132,29 @@ class ReverseEngineer extends AbstractTool
     }
     
     /**
+     * @return Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
+     */
+    protected function getActiveMappingDriver()
+    {
+        if (!$this->mappingDriver)
+        {
+           $this->mappingDriver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->entityManager->getConnection()->getSchemaManager());
+           $this->mappingDriver->setNamespace($this->namespace);
+        }
+        return $this->mappingDriver;
+    }
+    
+    
+    /**
      * 
      * @param \Doctrine\ORM\EntityManager $em
      * @return $metadata \Doctrine\ORM\Mapping\ClassMetadata[];
      */
     protected function loadMetadataFromDb(\Doctrine\ORM\EntityManager $em, $keepCase = true)
     {
-        $sm = $em->getConnection()->getSchemaManager();
-        $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($sm);
-        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $sm = $this->entityManager->getConnection()->getSchemaManager();
+        $driver = $this->getActiveMappingDriver();
+        $this->entityManager->getConfiguration()->setMetadataDriverImpl($driver);
         $cmf = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory($em);
         $cmf->setEntityManager($em);
         
@@ -138,9 +162,13 @@ class ReverseEngineer extends AbstractTool
         // Generate nice names
         //
         
+        foreach ($sm->listTableNames() as $tableName) {
+            $driver->setClassNameForTable($tableName,
+                    $em->getConfiguration()->getEntityNamespace($this->namespace).
+                    \Doctrine\Common\Inflector\Inflector::classify($this->normalizeName($tableName)));
+        }
 
         foreach ($sm->listTableNames() as $tableName) {
-            $driver->setClassNameForTable($tableName, \Doctrine\Common\Inflector\Inflector::classify($this->normalizeName($tableName)));
             $td = $sm->listTableDetails($tableName);
             
             // generate standard column names
@@ -166,7 +194,6 @@ class ReverseEngineer extends AbstractTool
             
             
         }
-        $classes = $driver->getAllClassNames();
         return $cmf->getAllMetadata(); /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata[] */
     }
 
